@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>扫雷游戏|原生JS|渡一</title>
+    <link rel="stylesheet" href="./css/index.css" />
+  </head>
+  <body>
+    <div class="container" style="border: none">
+      <h1 class="title">扫雷游戏</h1>
+      <div class="level">
+        <button class="easy active">简单</button>
+        <button class="normal">正常</button>
+        <button class="hard">困难</button>
+      </div>
+      <div class="info">
+        <span>总雷数：<span class="mineNum">10</span></span
+        >&nbsp;&nbsp;&nbsp;
+        <span>插旗数：<span class="flagNum">0</span></span>
+      </div>
+      <!-- js生成扫雷区域 -->
+      <div class="mineArea"></div>
+    </div>
+
+    <script src="./js/tools.js"></script>
+    <script src="./js/config.js"></script>
+    <script src="./js/index.js"></script>
+  </body>
+</html>
