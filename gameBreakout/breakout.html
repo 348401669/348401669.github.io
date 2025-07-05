@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        #div1 {
+            width: 600px;
+            height: 600px;
+            border: 1px solid black;
+            position: relative;
+            margin: 50px auto;
+        }
+
+        #ball {
+            width: 20px;
+            height: 20px;
+            background-color: red;
+            border-radius: 50%;
+            position: absolute;
+            bottom: 30px;
+            left: 290px;
+        }
+
+        #bat {
+            width: 100px;
+            height: 30px;
+            background-color: blue;
+            position: absolute;
+            bottom: 0;
+            left: 250px;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        #brick div {
+            width: 98px;
+            height: 18px;
+            border: 1px solid black;
+            float: left;
+            border-radius: 8px;
+        }
+
+        #score {
+            position: absolute;
+            top: 300px;
+            background-color: pink;
+            opacity: 50%;
+            width: 100%;
+            height: 50px;
+            line-height: 50px;
+            font-size: 20px;
+            font-weight: 100;
+            color: aqua;
+            text-align: center;
+            z-index: -1;
+        }
+    </style>
+    <script>
+        window.onload = function () {
+            var oDiv = document.getElementById('div1')
+            var oBall = document.getElementById('ball')
+            var oBat = document.getElementById('bat')
+            var oBrick = document.getElementById('brick')
+            var aBricks = oBrick.getElementsByTagName('div')
+            var oScore = document.getElementById('score')
+            // 水平方向运动
+            var speedX = parseInt(Math.random() * 4) + 3
+            // 垂直方向运动
+            var speedY = -(parseInt(Math.random() * 3) + 5)
+
+            dragOrMove(bat)
+
+            createBricks(60)
+            var score = 0
+            var timer = setInterval(function () {
+                oBall.style.left = oBall.offsetLeft + speedX + 'px'
+                oBall.style.top = oBall.offsetTop + speedY + 'px'
+                if (oBall.offsetLeft >= 580 || oBall.offsetLeft <= 0) {
+                    speedX *= -1
+                }
+                if (oBall.offsetTop <= 0) {
+                    speedY *= -1
+                }
+                if (oBall.offsetTop >= 580) {
+                    alert('GAME OVER...')
+                    window.location.reload()
+                }
+                // 碰撞检测
+                if (knock(oBall, oBat)) {
+                    speedY *= -1
+                }
+                var len = aBricks.length
+
+                for (var i = 0; i < aBricks.length; i++) {
+                    if (knock(aBricks[i], oBall)) {
+                        speedY *= -1
+                        oBrick.removeChild(aBricks[i])
+                        score += 2
+                        oScore.innerHTML = `得分： ${score} 分, 剩余 ${aBricks.length} 个砖块。`
+                        break
+                    }
+                }
+            }, 30);
+        }
+
+        function dragOrMove(node) {
+            node.onmousedown = function (ev) {
+                var e = ev || window.event
+                var offsetX = e.clientX - node.offsetLeft
+                document.onmousemove = function (ev) {
+                    var e = ev || window.event
+                    var l = e.clientX - offsetX
+                    if (l <= 0) { l = 0 }
+                    if (l >= 500) { l = 500 }
+                    node.style.left = l + 'px'
+                }
+            }
+            document.onmouseup = function () {
+                document.onmousemove = null
+            }
+
+            document.onkeydown = function (ev) {
+                var e = ev || window.event
+                var iCur = node.offsetLeft
+                var speed = 20
+                if (e.key === 'ArrowLeft') {
+                    l = iCur - speed
+                    if (l <= 0) { l = 0 }
+                    node.style.left = l + 'px'
+                }
+                if (e.key === 'ArrowRight') {
+                    l = iCur + speed
+                    if (l >= 500) { l = 500 }
+                    node.style.left = l + 'px'
+                }
+                if (e.key === 'Enter') {
+                    // 有问题，无法实现暂停
+                    clearInterval(window.timer)
+
+                }
+                // alert(e.key)
+            }
+
+        }
+
+        function createBricks(n) {
+            var oBrick = document.getElementById('brick')
+            for (var i = 0; i < n; i++) {
+                var node = document.createElement('div')
+                node.style.backgroundColor = randomColor()
+                oBrick.appendChild(node)
+            }
+            var aBricks = oBrick.getElementsByTagName('div')
+            for (var i = 0; i < aBricks.length; i++) {
+                aBricks[i].style.left = aBricks[i].offsetLeft + 'px'
+                aBricks[i].style.top = aBricks[i].offsetTop + 'px'
+            }
+            for (var i = 0; i < aBricks.length; i++) {
+                aBricks[i].style.position = 'absolute'
+            }
+
+        }
+        function randomColor() {
+            return `rgb(${parseInt(Math.random() * 256)},${parseInt(Math.random() * 256)},${parseInt(Math.random() * 256)})`
+        }
+        function knock(node1, node2) {
+            var l1 = node1.offsetLeft
+            var r1 = node1.offsetLeft + node1.offsetWidth
+            var t1 = node1.offsetTop
+            var b1 = node1.offsetTop + node1.offsetHeight
+
+            var l2 = node2.offsetLeft
+            var r2 = node2.offsetLeft + node2.offsetWidth
+            var t2 = node2.offsetTop
+            var b2 = node2.offsetTop + node2.offsetHeight
+
+            if (b2 < t1 || t2 > b1 || r2 < l1 || l2 > r1) {
+                return false
+            } else {
+                return true
+            }
+        }
+    </script>
+</head>
+
+<body>
+    <div id="div1">
+        <div id="ball"></div>
+        <div id="bat"></div>
+        <div id="brick"></div>
+        <div id="score"></div>
+    </div>
+</body>
+
+</html>
